@@ -19,7 +19,17 @@ namespace ShiftDuty
 
         private void button1_Click(object sender, EventArgs e)
         {
-
+            DAL.DAL_SD sd = new DAL.DAL_SD();
+            var dt = sd.GetShiftHistory(DateTime.Now.AddDays(-1), DateTime.Now,"张三丰");
+            var str = printDataTable(dt);
+            if (str!=string.Empty)
+            {
+                MessageBox.Show(str);
+            }
+            else
+            {
+                MessageBox.Show("Nothing");
+            }
         }
         /// <summary>
         /// 实体要不要，决定一下啊。要的话，这段就没有了。
