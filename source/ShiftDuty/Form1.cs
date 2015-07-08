@@ -21,6 +21,10 @@ namespace ShiftDuty
         {
             DAL.DAL_SD sd = new DAL.DAL_SD();
             var dt = sd.GetShiftHistory(DateTime.Now.AddDays(-1), DateTime.Now,"张三丰");
+            sd.AddRestHistory(1, DateTime.Now, 1);
+
+            dt =  sd.QueryUnDone();
+            int a = sd.DutyDone();
             var str = printDataTable(dt);
             if (str!=string.Empty)
             {
