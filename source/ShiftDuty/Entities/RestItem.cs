@@ -10,6 +10,6 @@ namespace ShiftDuty.Entities
         public int NID { get; set; }
         public string AliasName { get; set; }
         public DateTime RestDate { get; set; }
-
+        public int RestType { get; set; }
     }
 }

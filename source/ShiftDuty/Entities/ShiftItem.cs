@@ -8,8 +8,9 @@ namespace ShiftDuty.Entities
     public class ShiftItem
     {
         public int NID { get; set; }
-        public string AliasName { get; set; }
         public DateTime RestDate { get; set; }
+        public double RestValue { get; set; }
+        public bool Is_Calc { get; set; }
         public string Tag { get; set; }
 
     }

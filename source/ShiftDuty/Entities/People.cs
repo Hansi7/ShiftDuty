@@ -7,8 +7,8 @@ namespace ShiftDuty.Entities
 {
     public class People
     {
-        public long NID { get; set; }
+        public int NID { get; set; }
         public string AliasName { get; set; }
-        public Single RestRemain { get; set; }
+        public double DaoXiuRemain { get; set; }
     }
 }
