@@ -7,89 +7,27 @@ using System.Text;
 
 namespace ShiftDuty.BLL
 {
-    class ShiftManager
+    public class ShiftManager
     {
         DAL.DAL_SD dal = new DAL.DAL_SD();
         public ShiftManager()
         {
 
         }
-        /// <summary>
-        /// 换班！
-        /// </summary>
-        /// <param name="dutyDate"></param>
-        /// <param name="peopleWillBeOnDuty"></param>
-        /// <returns></returns>
-        internal int ChangeShift(DateTime dutyDate, Entities.People peopleOnDuty, Entities.People peopleWillBeOnDuty)
-        {
-            //上班记录修改
-            List<People> peoplesOnDuty = WhosOnDuty(dutyDate);
-            People OldName = peoplesOnDuty[0];
-            if (peoplesOnDuty.Count ==0)
-            {
-                throw new Exception("换班失败，没有找到"+dutyDate.ToShortDateString()+"的值班员!");
-            }
-            else
-            {
-                if (Is_Calc(dutyDate, peopleOnDuty))
-                {
-                    //原来的名字的倒休数量去掉
-                    _addDX(OldName, (-1) * QueryRestValue(dutyDate));
-                    //改成现在要改的名字
-                    _resetName(dutyDate, peopleWillBeOnDuty);
-
-                    //is_calc置为假
-                    _resetIsCalc(dutyDate, false);
-
-                    //要防止读取错误，更改到一半死机等情况。
-                    //现在的名字倒休数量加上去
-                    _addDX(peopleWillBeOnDuty, QueryRestValue(dutyDate));
-                    //is_calc置为真
-                    _resetIsCalc(dutyDate, true);
-
-                    //
-
-                    //dutyDone应该写在BLL里面。私有的。
-                    DutyDone(dutyDate,peopleWillBeOnDuty);
-                    dal.DutyDone();
-
-                }
-                else//还没有计算过。直接改
-                {
-                    _resetName(dutyDate, peopleWillBeOnDuty);
-                }
-            }
-            return 0;
-        }
-
-        private void _resetIsCalc(DateTime dutyDate, bool p)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void _resetName(DateTime dutyDate, People people)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void _addDX(People OldName, int p)
-        {
-            throw new NotImplementedException();
-        }
-
-        private int QueryRestValue(DateTime dutyDate)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        internal DataTable RestHistoryView()
-        {
-            return dal.RestHistoryView();
-        }
 
         #region 已经测试
-
+        internal DataTable RestHistoryView()
+        {
+            return dal.GetRestHistoryView();
+        }
+        internal List<ShiftItem> UnDoneShiftItem()
+        {
+            return _toEntityShiftItems(dal.QueryUnCalcShiftItem(DateTime.Now));
+        }
+        internal DataTable ShiftHistoryView()
+        {
+            return dal.ShiftHistoryView();
+        }
         internal List<People> WhosOnDuty(DateTime dutyDate)
         {
             var dt = dal.QueryWhosOnDuty(dutyDate);
@@ -103,18 +41,31 @@ namespace ShiftDuty.BLL
             return q.ToList<People>();
 
         }
-
         internal void DutyDone(DateTime dutyDate, People people)
         {
-            if (dal.QueryShiftItem(dutyDate, people).Rows.Count > 0 && Is_Calc(dutyDate, people) == false)
+            if (dal.QueryShiftItem(dutyDate, people.NID).Rows.Count > 0 && Is_Calc(dutyDate, people) == false)
             {
                 dal.DutyDone(dutyDate, people);
             }
         }
-
+        internal void DutyDone(DateTime dutyDate, int nid)
+        {
+            if (dal.QueryShiftItem(dutyDate, nid).Rows.Count > 0 && Is_Calc(dutyDate,nid) == false)
+            {
+                dal.DutyDone(dutyDate, nid);
+            }
+        }
         internal int AddShiftHistory(DateTime date, People p, double restValue)
         {
             return dal.AddShiftHistory(date, p.NID, restValue);
+        }
+        internal int AddShiftHistory(DateTime date, int nid, double restValue)
+        {
+            return dal.AddShiftHistory(date, nid, restValue);
+        }
+        internal int AddRestHistory(DateTime date, int nid, int restType,double restValue)
+        {
+            return dal.AddRestHistory(nid, date, restType, restValue);
         }
         /// <summary>
         /// 查询是不是已经计算过调休了。
@@ -126,7 +77,19 @@ namespace ShiftDuty.BLL
         {
             try
             {
-                var b = dal.QueryIsCalc(dutyDate, p);
+                var b = dal.QueryIsCalc(dutyDate, p.NID);
+                return b;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+        internal bool Is_Calc(DateTime dutyDate, int nid)
+        {
+            try
+            {
+                var b = dal.QueryIsCalc(dutyDate, nid);
                 return b;
             }
             catch (Exception err)
@@ -158,15 +121,17 @@ namespace ShiftDuty.BLL
             }
             return list;
         }
-
         //休息记录的修改
         //事假修改为倒休=>减少该人员的倒休数量
         //事假修改为（年休假、算加班）=>不减少倒休数量
-
-
+        /// <summary>
+        /// 查看值班历史
+        /// </summary>
+        /// <param name="dateTime">此日期前后100天</param>
+        /// <returns></returns>
         internal List<ShiftItem> GetShiftHistory(DateTime dateTime)
         {
-            var dt = dal.GetShiftHistory(dateTime, DateTime.Now);
+            var dt = dal.GetShiftHistory(dateTime.AddDays(-100), dateTime.AddDays(100));
             return _toEntityShiftItems(dt);
         }
         private List<ShiftItem> _toEntityShiftItems(DataTable dt)
@@ -175,14 +140,16 @@ namespace ShiftDuty.BLL
             foreach (DataRow dr in dt.Rows)
             {
                 DateTime dtime = dr.Field<DateTime>("SHIFT_DATE");
+                int id = dr.Field<int>("ID");
                 int nid = dr.Field<int>("NID");
                 double rv = dr.Field<double>("REST_VALUE");
                 bool iscalc = dr.Field<bool>("IS_CALC");
                 string tag = dr.Field<string>("TAG");
                 var p = new ShiftItem
                 {
+                    ID= id,
                     NID = nid,
-                    RestDate = dtime,
+                    ShiftDate = dtime,
                     RestValue = rv,
                     Is_Calc = iscalc,
                     Tag = tag
@@ -192,7 +159,62 @@ namespace ShiftDuty.BLL
             return list;
         }
 
+        internal DataTable GetRestView()
+        {
+            var dt = dal.GetRestHistoryView(DateTime.Now.AddDays(-30), DateTime.Now.AddDays(60));
+            return dt;
+        }
 
+
+        /// <summary>
+        /// 修改值班员
+        /// </summary>
+        /// <param name="si">原来的值班表项</param>
+        /// <param name="nid">新的顶替的值班人的NameID</param>
+        internal int ModifyPeopleShiftItem(ShiftItem si, int nid)
+        {
+            if (Is_Calc(si.ShiftDate, si.NID) == false)
+            {
+                return dal.ModifyPeopleInShiftItem(si.ID, nid);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        internal int AddNewPeople(People people)
+        {
+            return dal.addNewPeople(people.AliasName, people.DaoXiuRemain);
+        } 
+        internal int DelPeople(People people)
+        {
+            return dal.DelPeople(people.NID);
+
+        }
+        internal int DelShiftItem(ShiftItem si)
+        {
+            if (Is_Calc(si.ShiftDate, si.NID) == false)
+            {
+                return dal.DelShiftHistoryByID(si.ID);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        internal int ReBackDutyDone(ShiftItem si)
+        {
+            return dal.Un_DutyDone(si.ShiftDate,si.NID);
+        }
         #endregion
+
+       
+
+
+
+
+
+
+
     }
 }

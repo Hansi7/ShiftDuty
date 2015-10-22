@@ -31,6 +31,19 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'aaa|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\aaa\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EPPlus">
       <HintPath>.\EPPlus.dll</HintPath>
@@ -50,6 +63,12 @@
     <Compile Include="BLL\ShiftManager.cs" />
     <Compile Include="DAL\DAL_SD.cs" />
     <Compile Include="DAL\DBHelper.cs" />
+    <Compile Include="DutyListExport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DutyListExport.designer.cs">
+      <DependentUpon>DutyListExport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Entities\People.cs" />
     <Compile Include="Entities\RestItem.cs" />
     <Compile Include="Entities\ShiftItem.cs" />
@@ -59,28 +78,70 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormDataTableView.cs">
+    <Compile Include="FormAddRest.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormDataTableView.Designer.cs">
-      <DependentUpon>FormDataTableView.cs</DependentUpon>
+    <Compile Include="FormAddRest.Designer.cs">
+      <DependentUpon>FormAddRest.cs</DependentUpon>
     </Compile>
-    <Compile Include="FormRestType.cs">
+    <Compile Include="FrmNewProfile.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormRestType.Designer.cs">
-      <DependentUpon>FormRestType.cs</DependentUpon>
+    <Compile Include="FrmNewProfile.Designer.cs">
+      <DependentUpon>FrmNewProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmNewShift.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmNewShift.Designer.cs">
+      <DependentUpon>FrmNewShift.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmRestView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmRestView.Designer.cs">
+      <DependentUpon>FrmRestView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmTimeRangePicker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmTimeRangePicker.Designer.cs">
+      <DependentUpon>FrmTimeRangePicker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InputBox.Designer.cs">
+      <DependentUpon>InputBox.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\Class1.cs" />
+    <Compile Include="Tools\ExcelInput.cs" />
+    <Compile Include="Tools\ExcelOutput.cs" />
+    <EmbeddedResource Include="DutyListExport.resx">
+      <DependentUpon>DutyListExport.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormDataTableView.resx">
-      <DependentUpon>FormDataTableView.cs</DependentUpon>
+    <EmbeddedResource Include="FormAddRest.resx">
+      <DependentUpon>FormAddRest.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FormRestType.resx">
-      <DependentUpon>FormRestType.cs</DependentUpon>
+    <EmbeddedResource Include="FrmNewProfile.resx">
+      <DependentUpon>FrmNewProfile.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmNewShift.resx">
+      <DependentUpon>FrmNewShift.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmRestView.resx">
+      <DependentUpon>FrmRestView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmTimeRangePicker.resx">
+      <DependentUpon>FrmTimeRangePicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="InputBox.resx">
+      <DependentUpon>InputBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -101,9 +162,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tools\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
