@@ -19,7 +19,6 @@ namespace ShiftDuty.DAL
         //OleDbCommand comm = new OleDbCommand();
         internal static DataTable ExecuteDataTable(OleDbCommand comm)
         {
-
             using (OleDbConnection conn = new OleDbConnection(conStr))
             {
                 comm.Connection = conn;

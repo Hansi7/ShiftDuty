@@ -159,10 +159,26 @@ namespace ShiftDuty.BLL
             return list;
         }
 
-        internal DataTable GetRestView()
+        internal List<RestItem> GetRestView()
         {
             var dt = dal.GetRestHistoryView(DateTime.Now.AddDays(-30), DateTime.Now.AddDays(60));
-            return dt;
+            return _toEntityRestItem_Partial(dt);
+        }
+        private List<RestItem> _toEntityRestItem_Partial(DataTable dt)
+        {
+            List<RestItem> list = new List<RestItem>();
+            foreach (DataRow dr in dt.Rows)
+            {
+                int id = dr.Field<int>("ID");
+                DateTime dtt = dr.Field<DateTime>("REST_DATE");
+                string name = dr.Field<string>("ALIAS_NAME");
+                string restText = dr.Field<string>("REST_TYPE_TEXT");
+                double restValue = dr.Field<double>("REST_VALUE");
+
+                var r = new RestItem() { ID = id, AliasName = name, RestDate = dtt, RestValue = restValue,  RestText = restText};
+                list.Add(r);
+            }
+            return list;
         }
 
 

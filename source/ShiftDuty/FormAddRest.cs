@@ -58,6 +58,10 @@ namespace ShiftDuty
                 {
                     restValue = -restValue;
                 }
+                if (cb_restType.SelectedItem.ToString() != "倒休" && cb_restType.SelectedItem.ToString() != "加班")
+                {
+                    restValue = 0;
+                }
                 var ri = new Entities.RestItem() { AliasName = p.AliasName, NID = p.NID, RestDate = fromdate, RestType = dicRest[cb_restType.SelectedItem.ToString()], RestValue = restValue };
                 RestItems.Add(ri);
                 fromdate = fromdate.AddDays(1);

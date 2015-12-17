@@ -174,6 +174,10 @@ namespace ShiftDuty
                 li.SubItems.Add(FindAliasNameByNID(item.NID));
                 li.SubItems.Add(item.RestValue.ToString());
                 li.Tag = item;
+                if (item.Is_Calc)
+                {
+                    li.BackColor = Color.Gray;
+                }
                 lv_ShiftList.Items.Add(li);
             }
             //取消选择
@@ -448,7 +452,8 @@ namespace ShiftDuty
         {
             var lf = manager.GetRestView();
             var frm = new FrmRestView();
-            
+            frm.List = lf;
+            frm.ShowDialog();
         }
 
         private void Menu_Rest_ViewerOne_Click(object sender, EventArgs e)

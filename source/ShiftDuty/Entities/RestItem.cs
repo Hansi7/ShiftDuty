@@ -12,6 +12,7 @@ namespace ShiftDuty.Entities
         public string AliasName { get; set; }
         public DateTime RestDate { get; set; }
         public int RestType { get; set; }
+        public string RestText { get; set; }//显示的时候用
         public double RestValue { get; set; }
         public override string ToString()
         {

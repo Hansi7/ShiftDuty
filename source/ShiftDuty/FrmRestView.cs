@@ -17,7 +17,6 @@ namespace ShiftDuty
         }
 
         public List<Entities.RestItem> List { get; set; }
-        public List<Entities.People> Peoples { get; set; }
 
         private void FrmRestView_Load(object sender, EventArgs e)
         {
@@ -25,30 +24,21 @@ namespace ShiftDuty
             {
                 foreach (var item in List)
                 {
-                    ListViewItem li = new ListViewItem(GetPeople(item.NID).AliasName);
-                    li.SubItems.Add(item.RestValue)
-
-
-
+                    ListViewItem li = new ListViewItem(item.AliasName);
+                    li.SubItems.Add(item.RestDate.ToString("yyyy-MM-dd"));
+                    li.SubItems.Add(item.RestText);
+                    li.SubItems.Add(item.RestValue.ToString("0.0"));
+                    li.Tag = item.ID;
+                    this.listView1.Items.Add(li);
                 }
             }
         }
-        private Entities.People GetPeople(int nid)
+
+        private void cMenu_toExcel_Click(object sender, EventArgs e)
         {
-            foreach (var item in Peoples)
-            {
-                if (item.NID == nid)
-                {
-                    return item;
-                }
-            }
-            return null;
+            var fn = DateTime.Now.ToString("yyyyMMdd")+"导出倒休记录"+".xlsx";
+            Tools.ExcelOutput.ListViewToExcel_RestHistory(this.listView1, fn, "倒休记录");
+            System.Diagnostics.Process.Start(fn);
         }
-
-
-
-
-
-
     }
 }

@@ -48,7 +48,58 @@ namespace ShiftDuty.Tools
                 ep.Save();
             }
         }
+        public static void ListViewToExcel_RestHistory(System.Windows.Forms.ListView listview, string filenamewithpath, string sheetName)
+        {
 
+            FileInfo f = new FileInfo(filenamewithpath);
+            if (f.Exists)
+            {
+                f.Delete();
+                f = new FileInfo(filenamewithpath);
+            }
+
+            using (ExcelPackage ep = new ExcelPackage(f))
+            {
+                ExcelWorksheet osheet = ep.Workbook.Worksheets.Add(sheetName);
+                
+                for (int i = 0; i < listview.Columns.Count; i++)
+                {
+                    osheet.Cells[1, i + 1].Value = listview.Columns[i].Text;
+                    osheet.Column(i+1).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                }
+                //osheet.Column(4).Style.Numberformat.Format = "G/通用格式";
+                osheet.Column(2).Style.Numberformat.Format = "yyyy-MM-dd";
+                for (int i = 0; i < listview.Items.Count; i++)
+                {
+                    for (int j = 0; j < listview.Columns.Count; j++)
+                    {
+                        if (j == 1)//第二列
+                        {
+                            //osheet.Cells[i + 2, j + 1].Style.Numberformat.Format = "yyyy/MM/dd";
+                            osheet.Cells[i + 2, j + 1].Value = DateTime.Parse(listview.Items[i].SubItems[j].Text);
+                        }
+                        if (j == 3)//第四列
+                        {
+                            osheet.Cells[i + 2, j + 1].Value = double.Parse(listview.Items[i].SubItems[j].Text);
+                        }
+                        else //其他列
+                        {
+                            osheet.Cells[i + 2, j + 1].Value = listview.Items[i].SubItems[j].Text;
+                        }
+                        
+                    }
+                }
+
+                for (int i = 1; i <= osheet.Dimension.End.Column; i++)
+                {
+                    osheet.Column(i).AutoFit(8.43);
+                    //osheet.Column(i).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                }
+
+
+                ep.Save();
+            }
+        }
         public static void DataTableToExcel(DataTable dt, string fileName)
         {
             try
